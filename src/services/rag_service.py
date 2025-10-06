@@ -32,19 +32,19 @@ class RagService:
     def __init__(self):
         logger.info("Initializing RAG service...")
         
-        # 1. Initialize Embeddings using Hugging Face Inference API
+        
+        # 1. Initialize Text Splitter
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=200,
+            length_function=len,
+        )
+        
+        # 2. Initialize Embeddings using Hugging Face Inference API
         self.embeddings = HuggingFaceEndpointEmbeddings(
             huggingfacehub_api_token=HUGGINGFACE_API_KEY,
             task="feature-extraction",
             model="sentence-transformers/all-mpnet-base-v2"
-        )
-        
-        
-        # 2. Initialize Text Splitter
-        self.text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=400,
-            chunk_overlap=50,
-            length_function=len,
         )
         
         # 3. Initialize Pinecone Vector Store
@@ -151,6 +151,8 @@ class RagService:
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(None, lambda: self.vectorstore.add_documents(chunk_documents))
             logger.info("Document stored successfully in Pinecone.")
+            
+
             
             return {
                 "status": "success",

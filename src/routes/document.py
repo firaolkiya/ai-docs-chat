@@ -13,13 +13,11 @@ from src.models.user import User
 from fastapi import BackgroundTasks
 from src.services.document_service import document_service
 from src.services.rag_service import rag_service
-router = APIRouter(prefix="/documents", tags=["documents"])
-
 
 from src.models.document import FileType
 
 
-
+router = APIRouter(prefix="/documents", tags=["documents"])
 
 # Create document
 @router.post("/", response_model=Document)
@@ -28,7 +26,7 @@ async def create_document(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_active_user)
 ):
-    db = get_db()
+    b = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
 

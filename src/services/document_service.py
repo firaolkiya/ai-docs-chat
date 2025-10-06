@@ -16,18 +16,6 @@ from typing import List, Dict, Any, Optional
 
 
 class DocumentService:
-    async def save_file_to_gridfs(file: UploadFile, user_id: str) -> str:
-        db = get_db()
-        fs_bucket = AsyncIOMotorGridFSBucket(db)
-
-        content = await file.read()
-        gridfs_id = await fs_bucket.upload_from_stream(
-            file.filename,
-            content,
-            metadata={"user_id": user_id}
-        )
-        return str(gridfs_id)
-
     
     async def extract_text(self, filename: str, file_bytes: bytes) -> str:
         filetype = self.get_filetype_from_filename(filename)
@@ -51,7 +39,6 @@ class DocumentService:
             raise Exception(f"Failed to extract text from {filename}: {str(e)}")
     
     async def _extract_pdf(self, file_bytes: bytes) -> str:
-        """Extract text from PDF"""
         pdf_file = io.BytesIO(file_bytes)
         pdf_reader = PyPDF2.PdfReader(pdf_file)
         text = ""
@@ -60,7 +47,6 @@ class DocumentService:
         return text
     
     async def _extract_docx(self, file_bytes: bytes) -> str:
-        """Extract text from DOCX"""
         doc_file = io.BytesIO(file_bytes)
         doc = docx.Document(doc_file)
         text = ""
@@ -69,7 +55,6 @@ class DocumentService:
         return text
     
     async def _extract_html(self, file_bytes: bytes) -> str:
-        """Extract text from HTML"""
         soup = BeautifulSoup(file_bytes, 'html.parser')
         # Remove script and style elements
         for script in soup(["script", "style"]):
@@ -77,7 +62,6 @@ class DocumentService:
         return soup.get_text()
     
     def _split_text(self, text: str) -> List[LangchainDocument]:
-        """Split text into chunks"""
         if not text.strip():
             raise ValueError("Empty text content")
         

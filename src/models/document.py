@@ -20,3 +20,8 @@ class Document(BaseModel):
     gridfs_id: Optional[str] = Field(None, description="ID of file in GridFS")
     status: str = Field("uploaded", description="Document processing status: uploaded/indexing/ready")
     upload_time: datetime = Field(default_factory=datetime.utcnow)
+
+# number of character
+
+# they pay for you , you pay for openai
+
